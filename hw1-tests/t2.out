@@ -1,0 +1,2 @@
+1 STRING Hello World!
+This	is	cool, as always.
