@@ -1,6 +1,8 @@
 %{
 #include "tokens.hpp"
 #include "output.hpp"
+#include <string>
+#include <cstdlib>
 
 std::string string_buffer;
 
@@ -10,7 +12,8 @@ std::string string_buffer;
 %x STRING_STATE
 
 digit [0-9]
-hex_digit (x([2-7][0-9a-fA-F])
+hex_digit [2-7][0-9a-fA-F]
+letter [a-zA-Z]
 white_space [ \t\n\r]
 COMMENT \/\/.*
 NUM 0|[1-9]{digit}*
