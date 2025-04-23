@@ -1,0 +1,8 @@
+1 COMMENT //
+2 ID string
+2 ID note
+2 ASSIGN =
+2 STRING Hello
+World	Tab Space
+End
+2 SC ;

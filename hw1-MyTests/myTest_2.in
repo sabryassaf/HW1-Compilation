@@ -1,0 +1,13 @@
+// Simple FanC program
+int main() {
+    int x = 5;
+    byte y = 7b;
+    bool flag = true;
+    string message = "Hi	FanC!\n";
+    
+    if (x >= y) {
+        x = x - 1;
+    } else {
+        y = 0b;
+    }
+}

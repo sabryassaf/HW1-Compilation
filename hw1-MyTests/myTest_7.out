@@ -1,0 +1,7 @@
+1 COMMENT //
+2 ID string
+2 ID s
+2 ASSIGN =
+2 STRING Line
+Next	TabA
+2 SC ;

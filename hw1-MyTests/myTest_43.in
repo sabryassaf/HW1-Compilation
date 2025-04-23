@@ -1,0 +1,2 @@
+// Test 43: Advanced string
+string s = "Quotes: \"double\" and \'single\'";

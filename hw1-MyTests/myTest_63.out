@@ -1,0 +1,6 @@
+1 COMMENT //
+2 ID string
+2 ID msg
+2 ASSIGN =
+2 STRING Say "Hello" to FanC!\
+2 SC ;

@@ -1,0 +1,2 @@
+// Test 17: String edge case
+string s = "escaped quote: \" and backslash: \\";

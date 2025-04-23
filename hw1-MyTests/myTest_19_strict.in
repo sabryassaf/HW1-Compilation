@@ -1,0 +1,2 @@
+// Test 19: String edge case
+string s = "carriage\rreturn";

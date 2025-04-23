@@ -1,0 +1,2 @@
+// Test 48: Advanced string
+string s = "Spaces\x20between\x20words";

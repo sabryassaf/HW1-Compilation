@@ -1,0 +1,2 @@
+// Test 47: Advanced string
+string s = "Hello\n\r\t\x21";

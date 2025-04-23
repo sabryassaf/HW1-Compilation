@@ -1,0 +1,2 @@
+1 STRING The following string should fail!
+ERROR: Undefined escape sequence x10

@@ -1,0 +1,2 @@
+// Test 29: Complex string case
+string s = "\x48\x69\x21\nNew Line";

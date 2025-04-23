@@ -1,0 +1,8 @@
+1 COMMENT //
+2 ID string
+2 ID s
+2 ASSIGN =
+2 STRING line1
+line2
+line3
+2 SC ;

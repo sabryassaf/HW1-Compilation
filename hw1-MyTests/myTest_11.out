@@ -1,0 +1,14 @@
+1 COMMENT //
+2 INT int
+2 ID x
+2 ASSIGN =
+2 NUM 1
+2 BINOP +
+2 NUM 2
+2 BINOP *
+2 NUM 3
+2 BINOP -
+2 NUM 4
+2 BINOP /
+2 NUM 2
+2 SC ;

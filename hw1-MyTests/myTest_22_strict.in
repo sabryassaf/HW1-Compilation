@@ -1,0 +1,2 @@
+// Test 22: String edge case
+string s = "mixed\n\t\x20escape";

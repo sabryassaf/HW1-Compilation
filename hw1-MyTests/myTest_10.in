@@ -1,0 +1,8 @@
+// Test 10: Nested braces
+int main() {
+    if (true) {
+        if (false) {
+            break;
+        }
+    }
+}

@@ -1,0 +1,7 @@
+// Test 8: Function with return and break
+int func() {
+    while (true) {
+        break;
+    }
+    return 42;
+}

@@ -1,0 +1,11 @@
+1 COMMENT //
+2 INT int
+2 ID a
+2 ASSIGN =
+2 NUM 0
+2 SC ;
+3 INT int
+3 ID b
+3 ASSIGN =
+3 NUM 42
+3 SC ;

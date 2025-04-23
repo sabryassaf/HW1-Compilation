@@ -1,0 +1,2 @@
+// Test 26: String edge case
+string s = "edge\x41case\x0";

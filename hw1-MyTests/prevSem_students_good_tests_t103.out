@@ -1,0 +1,15 @@
+1 WHILE while
+1 LBRACE {
+1 RBRACE }
+2 WHILE while
+2 LBRACE {
+2 ID hello
+2 RBRACE }
+3 WHILE while
+3 LBRACE {
+3 ID hello23
+3 RBRACE }
+4 WHILE while
+4 LBRACE {
+4 NUM 0
+4 RBRACE }

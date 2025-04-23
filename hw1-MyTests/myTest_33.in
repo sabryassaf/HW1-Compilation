@@ -1,0 +1,2 @@
+// Test 33: Complex string case
+string s = "Multiple\x20hex\x20codes";

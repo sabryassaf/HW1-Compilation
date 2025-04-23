@@ -1,0 +1,2 @@
+// Test 62: Mixing operators
+int x = (4 + 3) * 2 / (1 - 5);

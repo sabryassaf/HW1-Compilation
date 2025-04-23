@@ -1,0 +1,2 @@
+// Test 34: Complex string case
+string s = "Back\\slash and quote: \\" \"";

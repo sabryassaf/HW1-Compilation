@@ -1,0 +1,1 @@
+printf("Hello world \0 shouldn't print this");

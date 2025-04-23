@@ -1,0 +1,2 @@
+// Test 37: Advanced string
+string s = "\x4A\x75\x73\x74 FanC!";

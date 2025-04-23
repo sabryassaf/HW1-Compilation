@@ -1,0 +1,5 @@
+1 COMMENT //
+2 ID string
+2 ID s
+2 ASSIGN =
+ERROR: Undefined escape sequence x0

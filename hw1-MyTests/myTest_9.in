@@ -1,0 +1,5 @@
+// Test 9: Equality and inequality
+int a = 1;
+int b = 2;
+bool equal = (a == b);
+bool diff = (a != b);

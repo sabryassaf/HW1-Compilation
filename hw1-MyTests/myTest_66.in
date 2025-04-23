@@ -1,0 +1,2 @@
+// Test 66: Boolean logic
+bool b = true or false and not false;

@@ -1,0 +1,11 @@
+1 COMMENT //
+2 BOOL bool
+2 ID b
+2 ASSIGN =
+2 TRUE true
+2 OR or
+2 FALSE false
+2 AND and
+2 NOT not
+2 FALSE false
+2 SC ;

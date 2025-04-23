@@ -1,0 +1,2 @@
+// Test 16: Escaped tab and null terminator
+string s = "tab\ttext\0after";

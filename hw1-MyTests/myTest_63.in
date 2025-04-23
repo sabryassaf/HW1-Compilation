@@ -1,0 +1,2 @@
+// Test 63: String with escaped quote and backslash
+string msg = "Say \"Hello\" to FanC!\\";

@@ -1,0 +1,4 @@
+// Test 60: Function with return value
+int identity(int x) {
+    return x;
+}

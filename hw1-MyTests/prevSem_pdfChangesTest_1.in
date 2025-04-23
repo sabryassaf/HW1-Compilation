@@ -1,0 +1,2 @@
+"The following string should fail!"
+"hex \x10 - This will not be printed!"

@@ -1,0 +1,5 @@
+// Test 64: More comments and breaks
+while (true) {
+    // loop
+    break;
+}

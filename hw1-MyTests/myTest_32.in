@@ -1,0 +1,2 @@
+// Test 32: Complex string case
+string s = "Tab\tSeparated\tValues";

@@ -1,0 +1,2 @@
+// Test 61: Long string with escapes
+string note = "Hello\nWorld\tTab\x20Space\x0AEnd";

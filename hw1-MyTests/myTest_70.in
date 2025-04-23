@@ -1,0 +1,15 @@
+// Test 70: Full sample
+void main() {
+    int x = 5;
+    byte y = 7b;
+    bool done = false;
+    string msg = "Start\n";
+    while (!done) {
+        msg = msg + "Loop\n";
+        if (x == 0) {
+            done = true;
+        }
+        x = x - 1;
+    }
+    return;
+}

@@ -1,0 +1,2 @@
+// Test 25: String edge case
+string s = "before\0after\nline";

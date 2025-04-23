@@ -1,0 +1,7 @@
+// Test 56: Multiple types and blocks
+int x = 5;
+byte y = 10b;
+bool f = false;
+{
+    int inner = 2;
+}

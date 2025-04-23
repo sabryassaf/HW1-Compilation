@@ -1,0 +1,32 @@
+int main()
+{
+	byte x = 0b;
+	byte x = 18b;
+	bool y = true;
+	y = false;
+	y = true and false;
+	y = true or false;
+	y = not true;
+	while (y) { if(y) { break; } else { continue; } } 
+	bool z = x == y;
+	z = x != y;
+	z = x<y;
+	z = x > y;
+	z = x <= y;
+	z = x>=y;
+	int w = x + x;
+	w = x - x;
+	w = x*x;
+	w = x / x;
+	// this is a comment
+	// invalid ID (will get num and id)
+	int 12AB = 0;
+
+	int 42 = 1;
+	// valid ID
+	int OO7 = 3;	
+	int max = 4;
+	printf("This\\is\"an\nexample\rfor\tescape\x6C\x6C\x6C\x6aQQ\x57\x63");
+	return 11;
+
+}

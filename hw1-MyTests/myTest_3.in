@@ -1,0 +1,8 @@
+// Test 3: Logic and bytes
+bool check(byte b) {
+    if (b != 0b) {
+        return true;
+    } else {
+        return false;
+    }
+}

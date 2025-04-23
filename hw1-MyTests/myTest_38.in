@@ -1,0 +1,2 @@
+// Test 38: Advanced string
+string s = "Multiple lines\nSecond line\nThird\n";

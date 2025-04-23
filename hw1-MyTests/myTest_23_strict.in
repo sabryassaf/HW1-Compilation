@@ -1,0 +1,2 @@
+// Test 23: String edge case
+string s = "\x41\x42\x43\x0A";

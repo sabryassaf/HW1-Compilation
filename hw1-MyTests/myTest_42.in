@@ -1,0 +1,2 @@
+// Test 42: Advanced string
+string s = "Ends with newline\n";

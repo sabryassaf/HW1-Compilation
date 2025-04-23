@@ -1,0 +1,7 @@
+// Test 5: Not and OR
+bool a = false;
+bool b = true;
+
+if (not a or b) {
+    a = true;
+}

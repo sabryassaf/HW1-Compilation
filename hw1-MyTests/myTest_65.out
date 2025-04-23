@@ -1,0 +1,9 @@
+1 COMMENT //
+2 VOID void
+2 ID doSomething
+2 LPAREN (
+2 RPAREN )
+2 LBRACE {
+3 RETURN return
+3 SC ;
+4 RBRACE }

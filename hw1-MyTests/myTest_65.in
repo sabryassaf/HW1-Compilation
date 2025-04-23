@@ -1,0 +1,4 @@
+// Test 65: Return in void
+void doSomething() {
+    return;
+}

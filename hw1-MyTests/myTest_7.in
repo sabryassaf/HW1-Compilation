@@ -1,0 +1,2 @@
+// Test 7: String with hex and escape
+string s = "Line\nNext\tTab\x41\0";

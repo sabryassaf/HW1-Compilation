@@ -1,0 +1,2 @@
+// Test 13: Null in middle
+string s = "abc\0def";

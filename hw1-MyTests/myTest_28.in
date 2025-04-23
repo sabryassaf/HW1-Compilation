@@ -1,0 +1,2 @@
+// Test 28: Complex string case
+string s = "slashes \\ and tabs\twith\x20space";

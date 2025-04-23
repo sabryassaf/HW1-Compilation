@@ -1,0 +1,8 @@
+// Test 4: Loop with string
+int count = 0;
+string msg = "Counting:\n";
+
+while (count < 3) {
+    msg = "Now: " + msg;
+    count = count + 1;
+}

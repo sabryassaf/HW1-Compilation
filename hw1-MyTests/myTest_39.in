@@ -1,0 +1,2 @@
+// Test 39: Advanced string
+string s = "Mixed \\ and \" and \t in one.";

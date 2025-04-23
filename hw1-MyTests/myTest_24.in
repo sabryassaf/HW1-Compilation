@@ -1,0 +1,2 @@
+// Test 24: String edge case
+string s = "null\0should not be seen";

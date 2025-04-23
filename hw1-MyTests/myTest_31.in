@@ -1,0 +1,2 @@
+// Test 31: Complex string case
+string s = "Escapes: \n \r \t \x41 \x42";

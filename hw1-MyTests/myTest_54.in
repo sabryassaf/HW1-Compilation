@@ -1,0 +1,2 @@
+// Test 54: Complex expressions
+int result = (1 + 2) * (3 - 4 / 2);

@@ -1,0 +1,2 @@
+// Test 27: Complex string case
+string s = "quoted word: \"FanC\"";

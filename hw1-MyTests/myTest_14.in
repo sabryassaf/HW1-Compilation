@@ -1,0 +1,2 @@
+// Test 14: Null at beginning
+string s = "\0abc";

@@ -1,0 +1,7 @@
+// Test 69: Nested scopes
+{
+    int a = 1;
+    {
+        int b = 2;
+    }
+}

@@ -1,0 +1,12 @@
+1 COMMENT //
+2 INT int
+2 ID identity
+2 LPAREN (
+2 INT int
+2 ID x
+2 RPAREN )
+2 LBRACE {
+3 RETURN return
+3 ID x
+3 SC ;
+4 RBRACE }

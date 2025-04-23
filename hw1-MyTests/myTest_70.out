@@ -1,0 +1,30 @@
+1 COMMENT //
+2 VOID void
+2 ID main
+2 LPAREN (
+2 RPAREN )
+2 LBRACE {
+3 INT int
+3 ID x
+3 ASSIGN =
+3 NUM 5
+3 SC ;
+4 BYTE byte
+4 ID y
+4 ASSIGN =
+4 NUM_B 7b
+4 SC ;
+5 BOOL bool
+5 ID done
+5 ASSIGN =
+5 FALSE false
+5 SC ;
+6 ID string
+6 ID msg
+6 ASSIGN =
+6 STRING Start
+
+6 SC ;
+7 WHILE while
+7 LPAREN (
+ERROR: Unknown character !

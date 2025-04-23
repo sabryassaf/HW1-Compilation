@@ -1,0 +1,6 @@
+"The tests from before already have a lot on strings, so just putting these"
+"simple"
+"also 'simple'"
+"escape new lines\n"
+"\0" continuefor
+" "aaa"

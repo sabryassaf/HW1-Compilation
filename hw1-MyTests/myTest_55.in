@@ -1,0 +1,2 @@
+// Test 55: Strings and escape sequences
+string s = "Line1\nLine2\tTabbed\x21";

@@ -1,0 +1,2 @@
+// Test 45: Advanced string
+string s = "Backslash at end\\";

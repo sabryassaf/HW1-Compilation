@@ -6,7 +6,7 @@ int main() {
 
     // read tokens until the end of file is reached
     while ((token = static_cast<tokentype>(yylex()))) {
-        // your code here
+
     }
     return 0;
 }

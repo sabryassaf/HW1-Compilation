@@ -1,0 +1,4 @@
+// Test 53: Relational ops
+bool compare(int x, int y) {
+    return x > y and x >= y and x < y and x <= y and x == y and x != y;
+}

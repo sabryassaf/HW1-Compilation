@@ -1,0 +1,3 @@
+// Test 58: Comments
+int x = 10; // this is a comment
+// full line comment

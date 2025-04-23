@@ -1,0 +1,2 @@
+// Test 15: Null right before newline
+string s = "test\0";

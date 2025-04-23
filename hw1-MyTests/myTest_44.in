@@ -1,0 +1,2 @@
+// Test 44: Advanced string
+string s = "\x41\x42\x43 \x44\x45";

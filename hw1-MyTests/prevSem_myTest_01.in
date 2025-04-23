@@ -1,0 +1,1 @@
+printf("String is fine, but I see a closing char after the Semicolom");"
