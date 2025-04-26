@@ -8,11 +8,6 @@ extern int yylineno;
 
 int main() {
     int token;
-
-    // read tokens until the end of file is reached
-    while ((token = yylex())) {
-        // The token printing is now handled directly in scanner2.lex
-        // So we don't need to do anything here with the tokens
-    }
+    while ((token = yylex())) { /* all done in scanner.lex */}
     return 0;
 }

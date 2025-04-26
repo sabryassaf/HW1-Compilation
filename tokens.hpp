@@ -33,10 +33,11 @@ enum tokentype {
     NUM,
     NUM_B,
     STRING,
-    HEX_OUT_OF_RANGE,
+    WHITE_SPACE,
     ESCAPE_ERROR,
-    UNCLOSED_STRING
-    
+    UNCLOSED_STRING,
+    UNKNOWN_CHAR,
+    HEX_ERROR
 };
 
 extern int yylineno;

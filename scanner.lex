@@ -1,168 +1,133 @@
-%{
-#include "tokens.hpp"
-#include "output.hpp"
-#include <string>
-#include <cstdlib>
+&{
+    #include <stdio.h>
+    #include "tokens.h"
+    #include <string>
+    using std::string;
+}
 
-std::string string_buffer;
+/* define  a global string buffer */
+static string buffer;
 
-%}
-%option yylineno
-%option noyywrap
-%x STRING_STATE
-
-digit [0-9]
-hex_digit [2-7][0-9a-fA-F]
-letter [a-zA-Z]
-white_space [ \t\n\r]
-COMMENT \/\/.*
-NUM 0|[1-9]{digit}*
-NUM_B {NUM}b
+#option yylineno
+#option yywrap
 
 %%
 
-"void" { output::printToken(yylineno, VOID, yytext); return VOID; }
-"int" { output::printToken(yylineno, INT, yytext); return INT; }
-"byte" { output::printToken(yylineno, BYTE, yytext); return BYTE; }
-"bool" { output::printToken(yylineno, BOOL, yytext); return BOOL; }
-"and" { output::printToken(yylineno, AND, yytext); return AND; }
-"or" { output::printToken(yylineno, OR, yytext); return OR; }
-"not" { output::printToken(yylineno, NOT, yytext); return NOT; }
-"true" { output::printToken(yylineno, TRUE, yytext); return TRUE; }
-"false" { output::printToken(yylineno, FALSE, yytext); return FALSE; }
-"return" { output::printToken(yylineno, RETURN, yytext); return RETURN; }
-"if" { output::printToken(yylineno, IF, yytext); return IF; }
-"else" { output::printToken(yylineno, ELSE, yytext); return ELSE; }
-"while" { output::printToken(yylineno, WHILE, yytext); return WHILE; }
-"break" { output::printToken(yylineno, BREAK, yytext); return BREAK; }
-"continue" { output::printToken(yylineno, CONTINUE, yytext); return CONTINUE; }
+// string condition
+%x STR
+digit ([0-9])
+letter ([a-zA-Z])
+id {letter} ({letter}|{digit})*
+white_space ([ \t\n\r])
 
-";" { output::printToken(yylineno, SC, yytext); return SC; }
-"," { output::printToken(yylineno, COMMA, yytext); return COMMA; }
-"(" { output::printToken(yylineno, LPAREN, yytext); return LPAREN; }
-")" { output::printToken(yylineno, RPAREN, yytext); return RPAREN; }
-"{" { output::printToken(yylineno, LBRACE, yytext); return LBRACE; }
-"}" { output::printToken(yylineno, RBRACE, yytext); return RBRACE; }
-"[" { output::printToken(yylineno, LBRACK, yytext); return LBRACK; }
-"]" { output::printToken(yylineno, RBRACK, yytext); return RBRACK; }
+// define postive numbers for B
+positive_num [1-9][0-9]*
+// define hex, and exclude 0-1 and out of range in errors
+hex_digits [2-7][0-9A-Fa-f]
 
-"=" { output::printToken(yylineno, ASSIGN, yytext); return ASSIGN; }
-"=="|"!=" |"<"|">"|"<="|">=" { output::printToken(yylineno, RELOP, yytext); return RELOP; }
-"+"|"-" |"*"|"/" { output::printToken(yylineno, BINOP, yytext); return BINOP; }
+// define escape characters
+string_escape \\[nrt\"\\]
+hex_escape \\x{hex_digits}
 
-{COMMENT} { output::printToken(yylineno, COMMENT, ""); return COMMENT; }
+// define error characters
+// hex errors: 
+// 1)not 0-9 and A-F..
+// 2)starts with 0-1 means out of range
+// 3) starts with 2-7 but doesnt end with 0-9A-Fa-f
+// TODO: check first page restrictions on range of hex
+bad_hex \\\x([^0-9A-Fa-f]|[0-1][0-9A-Fa-f]|[2-7][^0-9A-Fa-f])
 
-{letter}+({letter}|{digit})* { output::printToken(yylineno, ID, yytext); return ID; }
+// escape errors:
+// 1) unknown escape character
+bad_esc \\[^nrt\"\\x]
 
-{NUM} { output::printToken(yylineno, NUM, yytext); return NUM; }
+%%
 
-{NUM_B} { output::printToken(yylineno, NUM_B, yytext); return NUM_B; }
+"void"                          { output::printToken(yylineno, VOID, yytext); }
+"int"                           { output::printToken(yylineno, INT, yytext); }
+"byte"                          { output::printToken(yylineno, BYTE, yytext); }
+"bool"                          { output::printToken(yylineno, BOOL, yytext); }
+"and"                           { output::printToken(yylineno, AND, yytext); }
+"or"                            { output::printToken(yylineno, OR, yytext); }
+"not"                           { output::printToken(yylineno, NOT, yytext); }
+"true"                          { output::printToken(yylineno, TRUE, yytext); }
+"return"                        { output::printToken(yylineno, RETURN, yytext); }
+"if"                            { output::printToken(yylineno, IF, yytext); }
+"else"                          { output::printToken(yylineno, ELSE, yytext); }
+"while"                         { output::printToken(yylineno, WHILE, yytext); }
+"break"                         { output::printToken(yylineno, BREAK, yytext); }
+"continue"                      { output::printToken(yylineno, CONTINUE, yytext); }
+";'"                            { output::printToken(yylineno, SC, yytext); }
+","                             { output::printToken(yylineno, COMMA, yytext); }
+"("                             { output::printToken(yylineno, LPAREN, yytext); }
+")"                             { output::printToken(yylineno, RPAREN, yytext); }
+"{"                             { output::printToken(yylineno, LBRACE, yytext); }
+"}"                             { output::printToken(yylineno, RBRACE, yytext); }
+"["                             { output::printToken(yylineno, LBRACK, yytext); }
+"]"                             { output::printToken(yylineno, RBRACK, yytext); }
+"="                             { output::printToken(yylineno, ASSIGN, yytext); }
+"=="                            { output::printToken(yylineno, RELOP, yytext); }
+"!="                            { output::printToken(yylineno, RELOP, yytext); }
+"<"                             { output::printToken(yylineno, RELOP, yytext); }
+"<="                            { output::printToken(yylineno, RELOP, yytext); }
+">"                             { output::printToken(yylineno, RELOP, yytext); }
+">="                            { output::printToken(yylineno, RELOP, yytext); }
+"+"                             { output::printToken(yylineno, BINOP, yytext); }
+"-"                             { output::printToken(yylineno, BINOP, yytext); }
+"*"                             { output::printToken(yylineno, BINOP, yytext); }
+"/"                             { output::printToken(yylineno, BINOP, yytext); }
+"%"                             { output::printToken(yylineno, BINOP, yytext); }
 
-{white_space} { /* Ignore whitespace */ }
+"//".*                          { output::printToken(yylineno, COMMENT, yytext); }
 
-\" {
-    string_buffer.clear();
-    BEGIN(STRING_STATE);
-}
+{id}                            { output::printToken(yylineno, ID, yytext); }
 
-<STRING_STATE>\" {
-    output::printToken(yylineno, STRING, string_buffer.c_str());
-    BEGIN(INITIAL);
-    return STRING;
-}
 
-<STRING_STATE>\\n {
-    string_buffer += '\n';
-}
+"0"|({positive_num}+)           { output::printToken(yylineno, NUM, yytext); }
+"0b"|({positive_num}+b)         { output::printToken(yylineno, NUM_B, yytext); }
 
-<STRING_STATE>\\r {
-    string_buffer += '\r';
-}
+\"                              { buffer.clear(); BEGIN(STR); }
 
-<STRING_STATE>\\t {
-    string_buffer += '\t';
-}
+<STR> {string_escape}           { string_escape_handler(buffer, yytext); }
 
-<STRING_STATE>\\0 {
-    string_buffer += '\0';
-}
+<STR> {hex_escape}              { hex_escape_handler(buffer, yytext); }
 
-<STRING_STATE>\\\\ {
-    string_buffer += '\\';
-}
+<STR> {bad_hex}|{bad_esc}       { output::errorUndefinedEscape(yytext+1); }
 
-<STRING_STATE>\\\" {
-    string_buffer += '\"';
-}
+<STR> \"                        { output::printToken(yylineno, STRING, buffer.c_str()); BEGIN(INITIAL); }
 
-<STRING_STATE>\\x{hex_digit}{2} {
-    // Convert hex escape sequence to character
-    char hex_str[3] = {yytext[2], yytext[3], '\0'};
-    char *endptr;
-    long val = strtol(hex_str, &endptr, 16);
-    
-    // Check if the character is in valid range
-    if (val < 0x20 || val > 0x7E) {
-        output::errorUndefinedEscape(&yytext[1]);
-        exit(0);
+<STR> \n|\r|<<EOF>>             { output::errorUnclosedString(); }
+
+/* not sure yet what to do with the rest of the string */
+[^\\\"\n\r]+                    {buffer.push_back(yytext[0]);}
+
+%%
+// string_escape_handler, handles string escapes
+string string_escape_handler(string& buffer, const string& txt) {
+    switch (txt[1]) {
+        case 'n': buffer.push_back('\n'); break;
+        case 't': buffer.push_back('\t'); break;
+        case 'r': buffer.push_back('\r'); break;
+        case '"': buffer.push_back('\"'); break;
+        case '\\': buffer.push_back('\\'); break;
+        }
     }
-    
-    string_buffer += static_cast<char>(val);
+
+    return buffer;
 }
 
-<STRING_STATE>\\x[0-1][0-9a-fA-F] {
-    output::errorUndefinedEscape(&yytext[1]);
-    exit(0);
+// hex_escape_handler, handles hex escapes
+string hex_escape_handler(string& buffer, const string& txt) {
+    string hex_digits = txt.substr(2);
+    char hex_char[3];
+    hex_char[0] = '0';
+    hex_char[1] = 'x';
+    hex_char[2] = hex_digits[0];
+    buffer.push_back(strtol(hex_char, nullptr, 16));
+
+    return buffer;
 }
 
-<STRING_STATE>\\x[2-7][^0-9a-fA-F] {
-    output::errorUndefinedEscape(&yytext[1]);
-    exit(0);
+int yywrap() {
+    return 1;
 }
-
-<STRING_STATE>\\x. {
-    output::errorUndefinedEscape(&yytext[1]);
-    exit(0);
-}
-
-<STRING_STATE>\\x {
-    output::errorUndefinedEscape(&yytext[1]);
-    exit(0);
-}
-
-<STRING_STATE>\\. {
-    output::errorUndefinedEscape(&yytext[1]);
-    exit(0);
-}
-
-<STRING_STATE>\n {
-    output::errorUnclosedString();
-    exit(0);
-}
-
-<STRING_STATE><<EOF>> {
-    output::errorUnclosedString();
-    exit(0);
-}
-
-<STRING_STATE>[^\\\"\n]+ {
-    string_buffer += yytext;
-}
-
-. { output::errorUnknownChar(yytext[0]); exit(0); }
-
-%%
-
-
-
-
-
-
-
-
-
-
-
-
-
-
