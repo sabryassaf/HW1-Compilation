@@ -1,44 +1,51 @@
-&{
+%{
     #include <stdio.h>
-    #include "tokens.h"
+    #include "tokens.hpp"
+    #include "output.hpp"  
     #include <string>
     using std::string;
-}
+    
+    /* define global string buffer */
+    static string buffer;
+    static bool finished_string = false;
+    
+    /* Forward declarations for functions used in the rules */
+    void string_escape_handler(string& buffer, const string& txt);
+    void hex_escape_handler(string& buffer, const string& txt);
+%}
 
-/* define  a global string buffer */
-static string buffer;
+%option yylineno
+%option yywrap
 
-#option yylineno
-#option yywrap
-
-%%
-
-// string condition
+/* string condition */
 %x STR
-digit ([0-9])
-letter ([a-zA-Z])
-id {letter} ({letter}|{digit})*
-white_space ([ \t\n\r])
 
-// define postive numbers for B
-positive_num [1-9][0-9]*
-// define hex, and exclude 0-1 and out of range in errors
-hex_digits [2-7][0-9A-Fa-f]
+/* define digit, letter, id, white_space */
+digit   [0-9]
+letter  [a-zA-Z]
+id  {letter}({letter}|{digit})*
+white_space ([\t\n\r ])
 
-// define escape characters
-string_escape \\[nrt\"\\]
-hex_escape \\x{hex_digits}
+/* define postive numbers for BINOP and HEX */
+positive_num    [1-9][0-9]*
 
-// define error characters
-// hex errors: 
-// 1)not 0-9 and A-F..
-// 2)starts with 0-1 means out of range
-// 3) starts with 2-7 but doesnt end with 0-9A-Fa-f
-// TODO: check first page restrictions on range of hex
-bad_hex \\\x([^0-9A-Fa-f]|[0-1][0-9A-Fa-f]|[2-7][^0-9A-Fa-f])
+/* define hex, and exclude 0-1 and out of range in errors */
+hex_digits  [2-7][0-9A-Fa-f]
 
-// escape errors:
-// 1) unknown escape character
+/* define escape characters */
+string_escape   \\[nrt0\"\\]
+hex_escape  \\x{hex_digits}
+
+/* define error characters 
+ hex errors: 
+ 1)not 0-9 and A-F.. 
+ 2)starts with 0-1 means out of range
+ 3) starts with 2-7 but doesnt end with 0-9A-Fa-f
+ TODO: check first page restrictions on range of hex */
+bad_hex \\x([^0-9A-Fa-f]|[0-1][0-9A-Fa-f]|[2-7][^0-9A-Fa-f])
+
+/* escape errors:
+ 1) unknown escape character */
 bad_esc \\[^nrt\"\\x]
 
 %%
@@ -51,13 +58,14 @@ bad_esc \\[^nrt\"\\x]
 "or"                            { output::printToken(yylineno, OR, yytext); }
 "not"                           { output::printToken(yylineno, NOT, yytext); }
 "true"                          { output::printToken(yylineno, TRUE, yytext); }
+"false"                         { output::printToken(yylineno, FALSE, yytext); }
 "return"                        { output::printToken(yylineno, RETURN, yytext); }
 "if"                            { output::printToken(yylineno, IF, yytext); }
 "else"                          { output::printToken(yylineno, ELSE, yytext); }
 "while"                         { output::printToken(yylineno, WHILE, yytext); }
 "break"                         { output::printToken(yylineno, BREAK, yytext); }
 "continue"                      { output::printToken(yylineno, CONTINUE, yytext); }
-";'"                            { output::printToken(yylineno, SC, yytext); }
+";"                             { output::printToken(yylineno, SC, yytext); }
 ","                             { output::printToken(yylineno, COMMA, yytext); }
 "("                             { output::printToken(yylineno, LPAREN, yytext); }
 ")"                             { output::printToken(yylineno, RPAREN, yytext); }
@@ -83,49 +91,50 @@ bad_esc \\[^nrt\"\\x]
 {id}                            { output::printToken(yylineno, ID, yytext); }
 
 
-"0"|({positive_num}+)           { output::printToken(yylineno, NUM, yytext); }
-"0b"|({positive_num}+b)         { output::printToken(yylineno, NUM_B, yytext); }
+"0"|{positive_num}               { output::printToken(yylineno, NUM, yytext); }
+"0b"|{positive_num}b            { output::printToken(yylineno, NUM_B, yytext); }
 
-\"                              { buffer.clear(); BEGIN(STR); }
+\"                              { buffer.clear();finished_string = false; BEGIN(STR); }
 
-<STR> {string_escape}           { string_escape_handler(buffer, yytext); }
+<STR>{string_escape}           { if (!finished_string) {
+                                    string_escape_handler(buffer, yytext); }}
 
-<STR> {hex_escape}              { hex_escape_handler(buffer, yytext); }
+<STR>{hex_escape}              { if (!finished_string) {
+                                    hex_escape_handler(buffer, yytext); }}
 
-<STR> {bad_hex}|{bad_esc}       { output::errorUndefinedEscape(yytext+1); }
+<STR>{bad_hex}|{bad_esc}       { output::errorUndefinedEscape(yytext+1); }
 
-<STR> \"                        { output::printToken(yylineno, STRING, buffer.c_str()); BEGIN(INITIAL); }
+<STR>\"                        { output::printToken(yylineno, STRING, buffer.c_str());
+                                finished_string = true;
+                                BEGIN(INITIAL); }
 
-<STR> \n|\r|<<EOF>>             { output::errorUnclosedString(); }
+<STR>\n|\r                     { output::errorUnclosedString(); }
+<STR>[^\\"\n\r]+               { if (!finished_string) buffer.append(yytext); }
+<STR><<EOF>>                   { output::errorUnclosedString(); }
 
-/* not sure yet what to do with the rest of the string */
-[^\\\"\n\r]+                    {buffer.push_back(yytext[0]);}
-
+({white_space})+                {/* do nothing */}
+.                               { output::errorUnknownChar(yytext[0]); }
 %%
-// string_escape_handler, handles string escapes
-string string_escape_handler(string& buffer, const string& txt) {
+
+/* string_escape_handler, handles string escapes */
+void string_escape_handler(string& buffer, const string& txt) {
     switch (txt[1]) {
         case 'n': buffer.push_back('\n'); break;
         case 't': buffer.push_back('\t'); break;
         case 'r': buffer.push_back('\r'); break;
         case '"': buffer.push_back('\"'); break;
         case '\\': buffer.push_back('\\'); break;
+        case '0': 
+            buffer.push_back('\0');
+            finished_string = true;
+            break;
         }
-    }
-
-    return buffer;
 }
 
-// hex_escape_handler, handles hex escapes
-string hex_escape_handler(string& buffer, const string& txt) {
-    string hex_digits = txt.substr(2);
-    char hex_char[3];
-    hex_char[0] = '0';
-    hex_char[1] = 'x';
-    hex_char[2] = hex_digits[0];
-    buffer.push_back(strtol(hex_char, nullptr, 16));
-
-    return buffer;
+/* hex_escape_handler, handles hex escapes */
+void hex_escape_handler(string& buffer, const string& txt) {
+    int value = strtol(txt.substr(2, 2).c_str(), nullptr, 16);
+    buffer.push_back(static_cast<char>(value));
 }
 
 int yywrap() {
