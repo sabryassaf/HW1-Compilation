@@ -30,7 +30,8 @@ white_space ([\t\n\r ])
 positive_num    [1-9][0-9]*
 
 /* define hex, and exclude 0-1 and out of range in errors */
-hex_digits  [2-7][0-9A-Fa-f]
+hex_digits  [0-9A-Fa-f][0-9A-Fa-f]
+single_hex_digit [0-9A-Fa-f]
 
 /* define escape characters */
 string_escape   \\[nrt0\"\\]
@@ -38,14 +39,18 @@ hex_escape  \\x{hex_digits}
 
 /* define error characters 
  hex errors: 
- 1)not 0-9 and A-F.. 
- 2)starts with 0-1 means out of range
- 3) starts with 2-7 but doesnt end with 0-9A-Fa-f
- TODO: check first page restrictions on range of hex */
-bad_hex \\x([^0-9A-Fa-f]|[0-1][0-9A-Fa-f]|[2-7][^0-9A-Fa-f])
+ 1) incomplete hex sequence (only one digit)
+ 2) invalid characters in hex sequence
+ */
+bad_begin_hex   \\x[0-1][0-9A-Za-z]
+out_of_range    \\x[8-9A-Fa-f][0-9A-Za-z]
+bad_end_hex     \\x[2-7][^0-9A-Fa-f]
+incomplete_hex  \\x{single_hex_digit}
+
+bad_hex         \\x[^0-9A-Fa-f][^0-9A-Fa-f]|{bad_begin_hex}|{out_of_range}|{bad_end_hex}
 
 /* escape errors:
- 1) unknown escape character */
+ 1)unknown escape character */
 bad_esc \\[^nrt\"\\x]
 
 %%
@@ -91,26 +96,26 @@ bad_esc \\[^nrt\"\\x]
 {id}                            { output::printToken(yylineno, ID, yytext); }
 
 
-"0"|{positive_num}               { output::printToken(yylineno, NUM, yytext); }
+"0"|{positive_num}              { output::printToken(yylineno, NUM, yytext); }
 "0b"|{positive_num}b            { output::printToken(yylineno, NUM_B, yytext); }
 
 \"                              { buffer.clear();finished_string = false; BEGIN(STR); }
 
-<STR>{string_escape}           { if (!finished_string) {
+<STR>{string_escape}            { if (!finished_string) {
                                     string_escape_handler(buffer, yytext); }}
 
-<STR>{hex_escape}              { if (!finished_string) {
+<STR>{incomplete_hex}|{bad_hex}|{bad_esc}         { output::errorUndefinedEscape(yytext+1); }
+
+<STR>{hex_escape}               { if (!finished_string) {
                                     hex_escape_handler(buffer, yytext); }}
 
-<STR>{bad_hex}|{bad_esc}       { output::errorUndefinedEscape(yytext+1); }
-
-<STR>\"                        { output::printToken(yylineno, STRING, buffer.c_str());
+<STR>\"                         { output::printToken(yylineno, STRING, buffer.c_str());
                                 finished_string = true;
                                 BEGIN(INITIAL); }
 
-<STR>\n|\r                     { output::errorUnclosedString(); }
-<STR>[^\\"\n\r]+               { if (!finished_string) buffer.append(yytext); }
-<STR><<EOF>>                   { output::errorUnclosedString(); }
+<STR>\n|\r                      { output::errorUnclosedString(); }
+<STR>[^\\"\n\r]+                { if (!finished_string) buffer.append(yytext); }
+<STR><<EOF>>                    { output::errorUnclosedString(); }
 
 ({white_space})+                {/* do nothing */}
 .                               { output::errorUnknownChar(yytext[0]); }
