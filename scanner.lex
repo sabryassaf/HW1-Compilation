@@ -29,29 +29,19 @@ white_space ([\t\n\r ])
 /* define postive numbers for BINOP and HEX */
 positive_num    [1-9][0-9]*
 
-/* define hex, and exclude 0-1 and out of range in errors */
-hex_digits  [0-9A-Fa-f][0-9A-Fa-f]
-single_hex_digit [0-9A-Fa-f]
+/* define hex digits */
+hex_digit [0-9A-Fa-f]
+hex_digits {hex_digit}{hex_digit}
 
 /* define escape characters */
 string_escape   \\[nrt0\"\\]
+special_hex_escape \\x0A|\\x0D|\\x09
 hex_escape  \\x{hex_digits}
 
-/* define error characters 
- hex errors: 
- 1) incomplete hex sequence (only one digit)
- 2) invalid characters in hex sequence
- */
-bad_begin_hex   \\x[0-1][0-9A-Za-z]
-out_of_range    \\x[8-9A-Fa-f][0-9A-Za-z]
-bad_end_hex     \\x[2-7][^0-9A-Fa-f]
-incomplete_hex  \\x{single_hex_digit}
-
-bad_hex         \\x[^0-9A-Fa-f][^0-9A-Fa-f]|{bad_begin_hex}|{out_of_range}|{bad_end_hex}
-
-/* escape errors:
- 1)unknown escape character */
+/* define error patterns */
 bad_esc \\[^nrt\"\\x]
+bad_hex \\x[^0-9A-Fa-f][^0-9A-Fa-f]|\\x[^0-9A-Fa-f]|\\x[0-9A-Fa-f][^0-9A-Fa-f]
+incomplete_hex \\x[0-9A-Fa-f]
 
 %%
 
@@ -101,13 +91,30 @@ bad_esc \\[^nrt\"\\x]
 
 \"                              { buffer.clear();finished_string = false; BEGIN(STR); }
 
+<STR>\\x[0-9A-Fa-f]\"          { if (!finished_string) {
+                                    yyless(yyleng-1); // Push back the quote
+                                    output::errorUndefinedEscape(yytext+1); 
+                                  }}
+
+<STR>\\x\"                      { if (!finished_string) {
+                                    yyless(yyleng-1); // Push back the quote
+                                    output::errorUndefinedEscape("x"); 
+                                  }}
+
 <STR>{string_escape}            { if (!finished_string) {
                                     string_escape_handler(buffer, yytext); }}
 
-<STR>{incomplete_hex}|{bad_hex}|{bad_esc}         { output::errorUndefinedEscape(yytext+1); }
-
-<STR>{hex_escape}               { if (!finished_string) {
+<STR>{special_hex_escape}        { if (!finished_string) {
                                     hex_escape_handler(buffer, yytext); }}
+
+<STR>{hex_escape}                { if (!finished_string) {
+                                    hex_escape_handler(buffer, yytext); }}
+
+<STR>{bad_hex}                   { output::errorUndefinedEscape(yytext+1); }
+
+<STR>{bad_esc}                   { output::errorUndefinedEscape(yytext+1); }
+
+<STR>{incomplete_hex}            { output::errorUndefinedEscape(yytext+1); }
 
 <STR>\"                         { output::printToken(yylineno, STRING, buffer.c_str());
                                 finished_string = true;
@@ -139,6 +146,11 @@ void string_escape_handler(string& buffer, const string& txt) {
 /* hex_escape_handler, handles hex escapes */
 void hex_escape_handler(string& buffer, const string& txt) {
     int value = strtol(txt.substr(2, 2).c_str(), nullptr, 16);
+    // Check if the value is in the valid range (0x20-0x7E) or is a special case (0x09, 0x0A, 0x0D)
+    if (!((value >= 0x20 && value <= 0x7E) || value == 0x09 || value == 0x0A || value == 0x0D)) {
+        output::errorUndefinedEscape(txt.substr(1).c_str());
+        exit(0);
+    }
     buffer.push_back(static_cast<char>(value));
 }
 
